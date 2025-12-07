@@ -47,7 +47,7 @@ class User(db.Model):
 
 with app.app_context():
     db.create_all()
-
+    
 @app.route('/auth/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
