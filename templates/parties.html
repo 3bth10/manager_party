@@ -6,7 +6,7 @@
   {% if messages %}
     <ul id="flash-msg" class=flashes>
     {% for message in messages %}
-      <li class="text-red-300 text-center mt-10 ">{{ message }} تم الحذف</li>
+      <li class="text-red-900 text-3-1 text-center mt-10 ">{{ message }} تم الحذف</li>
     {% endfor %}
     </ul>
      <script>
@@ -21,6 +21,7 @@
   {% endif %}
 {% endwith %}
  <h1 class="text-4xl font-bold border-b mt-10 text-center p-2 text-orange-400 ">الحفلات</h1>
+ <h3 class="text-center text-lg">عدد الحفلات : {{ numOFparty }}</h3>
     {% if not parties %}
     <a href="{{url_for('login')}}" class="  hover:text-orange-300 p-5 text-xl lg:text-4xl md:text-3-1 border-b  text-center text-orange-400 mt-50 font-bold ">Sing up  to show the party </a>
     
@@ -40,11 +41,11 @@
     <p>عدد المناديب : {{ party.members }}</p>
     {% if members_names != '' %}
     <p> اسماء المناديب </p> <hr>
-   <ol class="grid grid-cols-2 justify-items-center"> 
-   
-   
+   <ol class="flex gap-3 justify-around flex-wrap list-inside "> 
     {% for name in party.members_names.split() %}
-     <li class="">{{name}}</li>
+    {% if name|length  >  2 %}
+     <li class="list-decimal">{{name}}</li>
+      {% endif %}
     {% endfor %}</ol>
     <hr>
     {% else %}

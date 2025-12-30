@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parties.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = "123456" 
+app.secret_key = "Alr3doi-110com" 
 db = SQLAlchemy(app)
 
 migrate = Migrate(app , db)
@@ -106,8 +106,6 @@ def index():
     user = session.get("username") 
     return render_template('index.html' ,user=user ) if  user else  redirect(url_for('login'))
     
-    
-    
 @app.route('/kg-lb', methods=['GET', 'POST'])
 def kg_lb():  
     if request.method == 'POST':
@@ -127,10 +125,10 @@ def manage_parties():
     if request.method == 'GET':
         y = request.args.get('year')
         parties = Party.query.filter_by(user_id=user_id).all()
-        return render_template('parties.html',  parties=parties , y=y) 
+        numOFparty = len(parties)
+        return render_template('parties.html',  parties=parties , y=y, numOFparty=numOFparty) 
     if request.method == 'POST':
         token = request.form.get('token')
-       
         data = request.get_json() if request.is_json else request.form
         if data.get("hall") :
             party = Party(
