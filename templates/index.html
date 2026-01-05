@@ -22,7 +22,7 @@
                 <li><a href="/createparty" class="hover:text-red-600 transition-colors">إنشاء حفلة</a></li>
                 <li>
                     <a href="/auth/logout" class="hover:text-red-600 transition-colors">
-                        {% if user %} تسجيل الخروج كـ {{ user }} {% else %} {% endif %}
+                        تسجيل الخروج
                     </a>
                 </li>
             </ul>
@@ -36,7 +36,7 @@
         <div class="container  mx-auto my-12 text-center px-4 md:px-0">
         <div class="bg-orange-200 p-8 rounded-xl shadow-lg transition-transform transform hover:scale-105">
             <h2 class="text-2xl md:text-3xl font-bold text-orange-800 mb-4">
-                Welcome back {{ user }}
+                Welcome back {{ user.username }}
             </h2>
             <p class="text-base md:text-lg leading-relaxed text-orange-700 mb-6">
                 من خلال هذه المنصة يمكنك إدارة حفلاتك بكل سهولة ويسر. اختر الأدوات المناسبة لإنجاز مهامك بسرعة وكفاءة.
