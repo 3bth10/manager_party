@@ -6,7 +6,7 @@
   {% if messages %}
     <ul id="flash-msg" class=flashes>
     {% for message in messages %}
-      <li class="text-red-300 text-center mt-10 ">{{ message }} تم الحذف</li>
+      <li class="text-red-900 text-3-1 text-center mt-10 ">{{ message }} تم الحذف</li>
     {% endfor %}
     </ul>
      <script>
@@ -21,6 +21,7 @@
   {% endif %}
 {% endwith %}
  <h1 class="text-4xl font-bold border-b mt-10 text-center p-2 text-orange-400 ">الحفلات</h1>
+ <h3 class="text-center text-lg">عدد الحفلات : {{ numOFparty }}</h3>
     {% if not parties %}
     <a href="{{url_for('login')}}" class="  hover:text-orange-300 p-5 text-xl lg:text-4xl md:text-3-1 border-b  text-center text-orange-400 mt-50 font-bold ">Sing up  to show the party </a>
     
@@ -30,33 +31,38 @@
 
 <div class="grid text-center gap-3 grid-cols-1 lg:grid-cols-4 p-5 md:grid-cols-2 sm:grid-cols-2 mb-10">
     {% for party in parties %}
-<div class="party-card bg-orange-200 p-6 rounded-xl mt-10 shadow-lg text-black transition-all hover:scale-105"
+<div class="party-card bg-orange-200 p-6 rounded-xl mt-10  shadow-lg text-black transition-all hover:scale-105"
      data-salary="{{ party.salary }}"
      data-members="{{ party.members }}"
      data-id="{{ party.id }}">
 
-    <h4>قاعة : {{ party.hall }}</h4>
-    <p>{{ party.date }} | التاريخ</p>
+    <h4 class="text-xl font-bold text-orange-500">قاعة : {{ party.hall }}</h4>
+    <div class="grid grid-cols-2 gap-3 text-sm ">
+    <p>{{ party.location }}</p>
+    <p>{{ party.date }} </p>
+    </div>
+    <hr class="m-2">
+    
     <p>عدد المناديب : {{ party.members }}</p>
     {% if members_names != '' %}
-    <p> اسماء المناديب </p> <hr>
-   <ol class="grid grid-cols-2 justify-items-center"> 
-   
-   
+    <p> اسماء المناديب </p> <hr class="m-2">
+   <ol class="flex gap-2 justify-around flex-wrap list-inside "> 
     {% for name in party.members_names.split() %}
-     <li class="">{{name}}</li>
+    {% if name|length  >  2 %}
+     <li class="list-decimal">{{name}}</li>
+      {% endif %}
     {% endfor %}</ol>
-    <hr>
+    <hr class="m-2" >
     {% else %}
       <p>مافي اسماء...</p>
     {% endif %}
 
     <p>المرتب : {{ party.salary }} ريال</p>
 
-    <p class="result font-bold text-blue-800 mt-2"></p>
+    <p class="result font-bold text-blue-800 mt-2"> </p>
 
-    <div class="flex gap-3 mt-4 ">
-        <form action="/parties/{{ party.id }}" method="post">
+    <div class="grid grid-cols-2 mt-5 gap-4  ">
+        <form class="" action="/parties/{{ party.id }}" method="post">
             <button class=" bg-orange-300 rounded-lg shadow-lg p-2 hover:bg-orange-500 transition-colors">delete</button>
         </form>
 
@@ -83,7 +89,6 @@
             }
         
     });
-    
   
 </script>
 

@@ -2,9 +2,14 @@ from flask import Flask, flash, redirect, request, jsonify , render_template , s
 from flask_sqlalchemy import SQLAlchemy 
 from datetime import timedelta
 from flask_migrate import Migrate
+from  flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_jwt_extended import (JWTManager,create_access_token, 
 jwt_required , create_refresh_token , decode_token
 , get_jwt_identity)
+from flask_admin import Admin 
+from flask_admin.theme import Bootstrap4Theme
+from flask_admin.contrib.sqla import ModelView
+from flask_admin import AdminIndexView  
 
 
 
@@ -12,13 +17,35 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parties.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = "123456" 
+app.secret_key = "Alr3doi-110com" 
 db = SQLAlchemy(app)
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+@login_manager.user_loader
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class AdminOnlyView(AdminIndexView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('index'))
+
+admin = Admin(app, name='microblog', 
+              theme=Bootstrap4Theme(swatch='cerulean'), 
+                index_view=AdminOnlyView())
 
 migrate = Migrate(app , db)
 app.config["JWT_SECRET_KEY"] = "super-secret110" 
 jwt = JWTManager(app)
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
+
 
 class Party(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,11 +58,12 @@ class Party(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
 
-class User(db.Model):
+class User(db.Model , UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     birthdate = db.Column(db.String(20), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
     parties = db.relationship('Party', backref='user', lazy=True)
 
     def set_password(self, password):
@@ -45,6 +73,8 @@ class User(db.Model):
     def check_password(self, password):
         from werkzeug.security import check_password_hash
         return check_password_hash(self.password_hash, password)
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Party, db.session))
 
 with app.app_context():
     db.create_all()
@@ -55,10 +85,9 @@ def login():
         data = request.get_json(silent=True) or request.form        
         username = data.get('username')
         password = data.get('password')
-        print(password)
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
-            
+            login_user(user)
             session.pop('token' , None)
             session['user_id'] = user.id
             token = create_access_token(identity=user.username)
@@ -102,14 +131,14 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/')
+@login_required
 def index():
     user = session.get("username") 
-    return render_template('index.html' ,user=user ) if  user else  redirect(url_for('login'))
-    
-    
-    
+    return render_template('index.html' ,user=current_user )
+
 @app.route('/kg-lb', methods=['GET', 'POST'])
-def kg_lb():  
+def kg_lb():
+    current_user_id = session.get('user_id')
     if request.method == 'POST':
         num_kglb = request.form.get('kg-lb')
         what = request.form.get('what')
@@ -122,15 +151,17 @@ def kg_lb():
     return render_template('kg-lb.html' ) 
 
 @app.route('/parties', methods=['GET', 'POST' ])
+
 def manage_parties():
+
     user_id = session.get('user_id')
     if request.method == 'GET':
         y = request.args.get('year')
         parties = Party.query.filter_by(user_id=user_id).all()
-        return render_template('parties.html',  parties=parties , y=y) 
+        numOFparty = len(parties)
+        return render_template('parties.html',  parties=parties , y=y, numOFparty=numOFparty) 
     if request.method == 'POST':
         token = request.form.get('token')
-       
         data = request.get_json() if request.is_json else request.form
         if data.get("hall") :
             party = Party(
@@ -181,6 +212,7 @@ def updateparty(id):
             party.hall = data.get("hall")
             party.location = data.get("location")
             party.members = data.get("members")
+            party.members_names = data.get("members_names")
             party.salary = data.get("salary")
             party.date = data.get("date")
             party.user_id = session.get('user_id')

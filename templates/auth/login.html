@@ -14,7 +14,7 @@
   {% if messages %}
     <ul id="flash-msg" class=flashes>
     {% for message in messages %}
-      <li class="tex t-red-300 text-center ">{{ message }}</li>
+      <li class="text-red-500 text-xl text-center ">{{ message.message }}</li>
     {% endfor %}
     </ul>
      <script>
