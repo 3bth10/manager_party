@@ -111,13 +111,14 @@ def register():
             password = request.form.get('password')
             password2 = request.form.get('password2')
             birth = request.form.get('birthdate')
+            
             if password != password2 :
                 flash('Passwords do not match!')
                 return redirect('/auth/register')
             if User.query.filter_by(username=username).first():
                 return jsonify({'message': 'Username already exists!'}), 400
             else:
-                new_user = User(username=username, birthdate=birth)
+                new_user = User(username=username, birthdate=birth )
                 new_user.set_password(password)
                 db.session.add(new_user)
                 db.session.commit()
@@ -151,7 +152,6 @@ def kg_lb():
     return render_template('kg-lb.html' ) 
 
 @app.route('/parties', methods=['GET', 'POST' ])
-
 def manage_parties():
 
     user_id = session.get('user_id')
@@ -159,7 +159,7 @@ def manage_parties():
         y = request.args.get('year')
         parties = Party.query.filter_by(user_id=user_id).all()
         numOFparty = len(parties)
-        return render_template('parties.html',  parties=parties , y=y, numOFparty=numOFparty) 
+        return render_template('parties.html', user=current_user ,   parties=parties , y=y, numOFparty=numOFparty) 
     if request.method == 'POST':
         token = request.form.get('token')
         data = request.get_json() if request.is_json else request.form
@@ -205,7 +205,7 @@ def crateparty():
 def updateparty(id):
     party = Party.query.get(id)
     if request.method == 'GET':
-        return render_template('updateparty.html', party=party)
+        return render_template('updateparty.html', party=party )
     if request.method == 'POST':
         data = request.form
         if data : 
@@ -217,12 +217,12 @@ def updateparty(id):
             party.date = data.get("date")
             party.user_id = session.get('user_id')
             db.session.commit()
-            return redirect("/parties")
+            return redirect("/parties" )
     return render_template('updateparty.html', party=party)
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('about.html' , user=current_user)
 
 if __name__ == "__main__":
     app.run(debug=True)

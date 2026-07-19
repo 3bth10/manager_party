@@ -10,10 +10,10 @@
 
 <div class="min-h-screen flex flex-col">
 
-    <!-- Navigation -->
     <nav class="bg-orange-300 shadow-lg rounded-b-xl">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center p-4">
-            <h1 class="text-3xl md:text-4xl font-bold text-red-500 mb-3 md:mb-0">R110 Tools</h1>
+            <a href="/" class="text-3xl md:text-4xl font-bold text-red-500 mb-3 md:mb-0">R110 Tools</a>
+            {% if user  %}
             <ul class="flex flex-wrap justify-center md:justify-end gap-4 text-lg font-medium">
                 <li><a href="/" class="hover:text-red-600 transition-colors">الرئيسية</a></li>
                 <li><a href="/parties" class="hover:text-red-600 transition-colors">حفلات</a></li>
@@ -22,9 +22,10 @@
                 <li><a href="/createparty" class="hover:text-red-600 transition-colors">إنشاء حفلة</a></li>
                 <li>
                     <a href="/auth/logout" class="hover:text-red-600 transition-colors">
-                        تسجيل الخروج
+                     تسجيل الخروج
                     </a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </nav>
